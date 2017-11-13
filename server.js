@@ -1,8 +1,13 @@
 var jsonStream = require('duplex-json-stream')
 var net = require('net')
+var fs = require('fs')
 
+var logs 
+if (fs.existsSync('./logs.json'))
+  logs = require('./logs.json')
+else 
+  logs = []
 
-var logs = []
 
 var server = net.createServer (function (socket) {
   socket = jsonStream(socket)
@@ -20,7 +25,6 @@ var server = net.createServer (function (socket) {
         break
       case 'withdraw':
         var totalAmount = logs.reduce(reducer , 0)
-        console.log(totalAmount)
         if (totalAmount < msg.amount) {
           socket.end("Can't withdraw!! Low balance")
         }
@@ -32,6 +36,9 @@ var server = net.createServer (function (socket) {
       default:
         socket.end('wrong command')
     }
+
+    var record = fs.createWriteStream('./logs.json')
+    record.end(JSON.stringify(logs, null, '\t'))
   })
 })
 
