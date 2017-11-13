@@ -20,11 +20,14 @@ var server = net.createServer (function (socket) {
         break
       case 'withdraw':
         var totalAmount = logs.reduce(reducer , 0)
-        if (totalAmount < msg.amt) {
+        console.log(totalAmount)
+        if (totalAmount < msg.amount) {
           socket.end("Can't withdraw!! Low balance")
         }
-        logs.push(msg)
-        socket.end({cmd:'balance', balance:logs.reduce(reducer, 0)})
+        else {
+          logs.push(msg)
+          socket.end({cmd:'balance', balance:logs.reduce(reducer, 0)})
+        }
         break
       default:
         socket.end('wrong command')
